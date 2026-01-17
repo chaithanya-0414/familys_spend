@@ -26,7 +26,7 @@ inject_custom_css()
 st.sidebar.markdown("""
     <div style="text-align: center; margin-bottom: 2rem;">
         <h1 style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; margin-bottom: 0;">FamilySpend</h1>
-        <p style="color: #718096; font-size: 0.8rem;">Smart Expense Tracker v1.2</p>
+        <p style="color: #718096; font-size: 0.8rem;">Smart Expense Tracker v1.1</p>
     </div>
 """, unsafe_allow_html=True)
 
