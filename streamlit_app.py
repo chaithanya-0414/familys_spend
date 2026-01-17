@@ -32,11 +32,23 @@ st.sidebar.markdown("""
 
 profiles = db.get_profiles()
 profile_map = {p['display_name']: p['id'] for p in profiles}
-selected_profile_name = st.sidebar.selectbox("👤 Current User", list(profile_map.keys()))
+
+# Mobile-friendly: Show profile selector in main area on mobile, sidebar on desktop
+st.markdown("### 👤 Select User")
+selected_profile_name = st.selectbox("Current User", list(profile_map.keys()), label_visibility="collapsed")
 selected_profile_id = profile_map[selected_profile_name]
 
+# Also add to sidebar for desktop users
+st.sidebar.selectbox("👤 Current User", list(profile_map.keys()), key="sidebar_profile")
+
+st.markdown("---")
+st.markdown("### 📱 Navigate")
+page_options = ["📊 Dashboard", "➕ Add Expense", "📝 History", "💳 Cards", "👪 Family View"]
+page = st.selectbox("Go to", page_options, label_visibility="collapsed")
+
+# Also in sidebar for desktop
 st.sidebar.markdown("---")
-page = st.sidebar.radio("Navigate", ["📊 Dashboard", "➕ Add Expense", "📝 History", "💳 Cards", "👪 Family View"])
+st.sidebar.radio("Navigate", page_options, key="sidebar_nav")
 
 # --- HELPERS ---
 def card_metric(label, value):
