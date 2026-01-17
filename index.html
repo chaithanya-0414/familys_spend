@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#6200EA">
+    <meta name="description" content="FamilySpend - Family Expense Tracker">
+    <title>FamilySpend - Family Expense Tracker</title>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Loading Overlay -->
+    <div id="loading" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- App Container -->
+    <div id="app" class="app-container">
+
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <h1 class="app-title" data-i18n="app_title">FamilySpend</h1>
+                <div class="header-actions">
+                    <button id="langToggle" class="icon-btn" aria-label="Language Toggle">
+                        <span class="lang-icon">🌐</span>
+                    </button>
+                    <button id="themeToggle" class="icon-btn" aria-label="Theme Toggle">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Dashboard View -->
+            <section id="dashboardView" class="view active">
+                <!-- Profile Selector -->
+                <div class="profile-selector">
+                    <label data-i18n="select_profile">Select Profile:</label>
+                    <select id="profileSelect" class="profile-select">
+                        <option value="">Loading...</option>
+                    </select>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-content">
+                            <div class="stat-label" data-i18n="total_spent">Total Spent</div>
+                            <div class="stat-value" id="totalSpent">₹0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-content">
+                            <div class="stat-label" data-i18n="categories">Categories</div>
+                            <div class="stat-value" id="categoryCount">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Period Filter -->
+                <div class="period-filter">
+                    <button class="period-btn active" data-period="week" data-i18n="week">Week</button>
+                    <button class="period-btn" data-period="month" data-i18n="month">Month</button>
+                    <button class="period-btn" data-period="year" data-i18n="year">Year</button>
+                </div>
+
+                <!-- Charts -->
+                <div class="charts-container">
+                    <div class="chart-card">
+                        <h3 data-i18n="category_breakdown">Category Breakdown</h3>
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+
+                    <div class="chart-card">
+                        <h3 data-i18n="weekly_trend">Weekly Trend</h3>
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Top Categories -->
+                <div class="top-categories">
+                    <h3 data-i18n="top_categories">Top 3 Categories</h3>
+                    <div id="topCategoriesList" class="category-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Family Overview Button -->
+                <button id="familyOverviewBtn" class="btn-primary full-width" data-i18n="family_overview">
+                    View Family Overview
+                </button>
+            </section>
+
+            <!-- Add Expense View -->
+            <section id="addExpenseView" class="view">
+                <div class="form-card">
+                    <h2 data-i18n="add_expense">Add Expense</h2>
+                    <form id="expenseForm">
+                        <div class="form-group">
+                            <label data-i18n="profile">Profile</label>
+                            <select id="expenseProfile" required>
+                                <option value="">Select Profile</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label data-i18n="category">Category</label>
+                            <select id="expenseCategory" required>
+                                <option value="">Select Category</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label data-i18n="amount">Amount (₹)</label>
+                            <input type="number" id="expenseAmount" min="0" step="0.01" required placeholder="0.00">
+                        </div>
+
+                        <div class="form-group">
+                            <label data-i18n="date">Date</label>
+                            <input type="date" id="expenseDate" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label data-i18n="note">Note (Optional)</label>
+                            <textarea id="expenseNote" rows="3" placeholder="Add a note..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label data-i18n="credit_card">Credit Card (Optional)</label>
+                            <select id="expenseCard">
+                                <option value="">Cash / No Card</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn-primary full-width" data-i18n="save_expense">
+                            Save Expense
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Credit Cards View -->
+            <section id="creditCardsView" class="view">
+                <div class="form-card">
+                    <h2 data-i18n="credit_cards">💳 Credit Cards</h2>
+
+                    <!-- Credit Cards Grid -->
+                    <div class="credit-cards-grid" id="creditCardsGrid">
+                        <!-- Cards will be populated by JS -->
+                    </div>
+
+                    <!-- Add New Card Button -->
+                    <button id="showAddCardForm" class="btn-primary full-width" style="margin-top: var(--spacing-md);">
+                        ➕ <span data-i18n="add_card">Add New Card</span>
+                    </button>
+                </div>
+
+                <!-- Add Card Form (Hidden by default) -->
+                <div id="addCardFormContainer" class="form-card hidden" style="margin-top: var(--spacing-md);">
+                    <h3 data-i18n="add_new_card">Add New Credit Card</h3>
+                    <form id="addCardForm">
+                        <div class="form-group">
+                            <label data-i18n="card_profile">Profile</label>
+                            <select id="cardProfile" required>
+                                <option value="">Select Profile</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label data-i18n="card_name">Card Name</label>
+                            <input type="text" id="cardName" required placeholder="e.g., HDFC Platinum">
+                        </div>
+
+                        <div class="form-group">
+                            <label data-i18n="card_last_four">Last 4 Digits (Optional)</label>
+                            <input type="text" id="cardLastFour" maxlength="4" pattern="[0-9]{4}" placeholder="1234">
+                        </div>
+
+                        <div class="form-group">
+                            <label data-i18n="credit_limit">Credit Limit (₹)</label>
+                            <input type="number" id="cardLimit" min="0" step="1000" required placeholder="50000">
+                        </div>
+
+                        <div class="form-group">
+                            <label data-i18n="billing_day">Billing Day (1-31)</label>
+                            <input type="number" id="billingDay" min="1" max="31" required placeholder="5">
+                        </div>
+
+                        <div class="form-group">
+                            <label data-i18n="card_color">Card Color</label>
+                            <select id="cardColor">
+                                <option value="gradient-primary">Purple Gradient</option>
+                                <option value="gradient-accent">Pink Gradient</option>
+                                <option value="gradient-success">Blue Gradient</option>
+                                <option value="gradient-warm">Warm Gradient</option>
+                                <option value="gradient-cool">Cool Gradient</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <button type="button" id="cancelAddCard" class="btn-secondary">
+                                <span data-i18n="cancel">Cancel</span>
+                            </button>
+                            <button type="submit" class="btn-primary">
+                                <span data-i18n="save_card">Save Card</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Reports View -->
+            <section id="reportsView" class="view">
+                <div class="report-card">
+                    <h2 data-i18n="reports">Reports</h2>
+
+                    <!-- Filter Options -->
+                    <div class="filter-section">
+                        <div class="form-group">
+                            <label data-i18n="filter_profile">Filter by Profile</label>
+                            <select id="reportProfile">
+                                <option value="">All Profiles</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="start_date">Start Date</label>
+                                <input type="date" id="reportStartDate">
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="end_date">End Date</label>
+                                <input type="date" id="reportEndDate">
+                            </div>
+                        </div>
+
+                        <button id="applyFilters" class="btn-primary full-width" data-i18n="apply_filters">
+                            Apply Filters
+                        </button>
+                    </div>
+
+                    <!-- Expense List -->
+                    <div class="expense-list" id="expenseList">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <!-- Export Buttons -->
+                    <div class="export-section">
+                        <button id="exportCSV" class="btn-secondary full-width" data-i18n="export_csv">
+                            📥 Export to CSV
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings View -->
+            <section id="settingsView" class="view">
+                <div class="settings-card">
+                    <h2 data-i18n="settings">Settings</h2>
+
+                    <div class="settings-section">
+                        <h3 data-i18n="appearance">Appearance</h3>
+                        <div class="setting-item">
+                            <span data-i18n="dark_mode">Dark Mode</span>
+                            <label class="switch">
+                                <input type="checkbox" id="darkModeSwitch">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3 data-i18n="language">Language</h3>
+                        <div class="setting-item">
+                            <span data-i18n="current_language">Current Language</span>
+                            <button id="languageSwitch" class="btn-secondary">
+                                <span id="currentLang">English</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3 data-i18n="about">About</h3>
+                        <p class="about-text">
+                            <strong>FamilySpend v1.0</strong><br>
+                            <span data-i18n="about_desc">A simple, beautiful expense tracker for families</span>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Family Overview Modal -->
+            <div id="familyModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 data-i18n="family_overview">Family Overview</h2>
+                        <button class="close-btn" id="closeModal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="family-stats">
+                            <div class="stat-card">
+                                <div class="stat-label" data-i18n="total_family_spending">Total Family Spending</div>
+                                <div class="stat-value" id="familyTotal">₹0</div>
+                            </div>
+                        </div>
+
+                        <div class="chart-card">
+                            <h3 data-i18n="spending_by_member">Spending by Member</h3>
+                            <canvas id="familyChart"></canvas>
+                        </div>
+
+                        <div class="chart-card">
+                            <h3 data-i18n="top_family_categories">Top Family Categories</h3>
+                            <canvas id="familyCategoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Details Modal -->
+            <div id="cardDetailsModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 id="cardDetailsTitle">Card Details</h2>
+                        <button class="close-btn" id="closeCardModal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Card Summary -->
+                        <div class="card-stats-grid" style="margin-bottom: var(--spacing-lg);">
+                            <div class="stat-card">
+                                <div class="stat-content">
+                                    <div class="stat-label" data-i18n="spent">Spent</div>
+                                    <div class="stat-value" id="cardSpent">₹0</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-content">
+                                    <div class="stat-label" data-i18n="available">Available</div>
+                                    <div class="stat-value" id="cardAvailable">₹0</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-content">
+                                    <div class="stat-label" data-i18n="utilization">Utilization</div>
+                                    <div class="stat-value" id="cardUtilization">0%</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Utilization Bar -->
+                        <div>
+                            <label style="font-weight: 600; margin-bottom: var(--spacing-sm); display: block;">Credit
+                                Utilization</label>
+                            <div class="card-utilization-bar">
+                                <div id="cardUtilizationFill" class="card-utilization-fill" style="width: 0%"></div>
+                            </div>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: var(--spacing-xs);">
+                                Billing Cycle: <span id="cardCycle">-</span>
+                            </p>
+                        </div>
+
+                        <!-- Category Breakdown -->
+                        <div class="chart-card" style="margin-top: var(--spacing-lg);">
+                            <h3 data-i18n="category_breakdown">Category Breakdown</h3>
+                            <canvas id="cardCategoryChart"></canvas>
+                        </div>
+
+                        <!-- Recent Transactions -->
+                        <div style="margin-top: var(--spacing-lg);">
+                            <h3 style="margin-bottom: var(--spacing-md);" data-i18n="recent_transactions">Recent
+                                Transactions</h3>
+                            <div id="cardTransactionsList" class="expense-list" style="max-height: 300px;">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Delete Card Button -->
+                        <button id="deleteCardBtn" class="btn-secondary full-width"
+                            style="margin-top: var(--spacing-lg); color: var(--error-color); border-color: var(--error-color);">
+                            🗑️ <span data-i18n="delete_card">Delete Card</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-view="dashboardView">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label" data-i18n="dashboard">Dashboard</span>
+            </button>
+            <button class="nav-item" data-view="addExpenseView">
+                <span class="nav-icon">➕</span>
+                <span class="nav-label" data-i18n="add">Add</span>
+            </button>
+            <button class="nav-item" data-view="creditCardsView">
+                <span class="nav-icon">💳</span>
+                <span class="nav-label" data-i18n="cards">Cards</span>
+            </button>
+            <button class="nav-item" data-view="reportsView">
+                <span class="nav-icon">📄</span>
+                <span class="nav-label" data-i18n="reports">Reports</span>
+            </button>
+            <button class="nav-item" data-view="settingsView">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-label" data-i18n="settings">Settings</span>
+            </button>
+        </nav>
+
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+
+</html>
