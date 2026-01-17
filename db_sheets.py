@@ -32,9 +32,16 @@ def _read_df(worksheet, expected_cols):
             if col not in df.columns:
                 df[col] = None 
         return df
-    except Exception:
-        # Return empty DF with expected columns if sheet not found/empty
-        return pd.DataFrame(columns=expected_cols)
+    except Exception as e:
+        error_msg = str(e)
+        # Only return empty if it's strictly a "Worksheet not found" or empty sheet issue
+        if "WorksheetNotFound" in error_msg or "worksheet" in error_msg.lower() and "not found" in error_msg.lower():
+            return pd.DataFrame(columns=expected_cols)
+        
+        # For other errors (API timeout, quota, auth), RAISE to prevent data loss!
+        # Resetting to empty on connection error causes complete data wipe on next write.
+        print(f"CRITICAL ERROR reading {worksheet}: {e}")
+        raise e
 
 def _write_df(worksheet, df):
     conn = get_conn()
