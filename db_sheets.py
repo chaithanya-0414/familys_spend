@@ -38,7 +38,15 @@ def _read_df(worksheet, expected_cols):
 
 def _write_df(worksheet, df):
     conn = get_conn()
-    conn.update(worksheet=worksheet, data=df)
+    try:
+        conn.update(worksheet=worksheet, data=df)
+    except Exception:
+        # If worksheet doesn't exist, create it
+        try:
+            conn.create(worksheet=worksheet, data=df)
+        except Exception as e:
+            # Fallback for some library versions or permissions
+            print(f"Error creating worksheet {worksheet}: {e}")
 
 # --- PROFILES ---
 def get_profiles():
