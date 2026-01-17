@@ -2,10 +2,13 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
 from datetime import datetime, timedelta
-import db
-
-# --- CONFIG ---
+# Toggle between db (local sqlite) and db_sheets (google sheets)
+import db_sheets as db 
+# import db as db
 st.set_page_config(page_title="FamilySpend", page_icon="💰", layout="wide")
 
 # --- CUSTOM CSS ---
@@ -69,7 +72,9 @@ if page == "📊 Dashboard":
         card_metric("Projected", f"₹{projections:,.0f}")
     with c3:
         # Most spent category
-        top_cat = stats['category_breakdown'][0]['name'] if stats['category_breakdown'] else "N/A"
+        top_cat = "N/A"
+        if stats['category_breakdown']:
+            top_cat = stats['category_breakdown'][0]['name']
         card_metric("Top Category", top_cat)
 
     # Charts

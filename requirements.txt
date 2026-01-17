@@ -3,3 +3,4 @@ flask-cors
 streamlit
 pandas
 plotly
+st-gsheets-connection
