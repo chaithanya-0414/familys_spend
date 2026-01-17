@@ -1,0 +1,195 @@
+/* Adapted from original style.css for Streamlit */
+
+/* ===========================
+   Variables
+   =========================== */
+:root {
+    --primary-color: #667eea;
+    --primary-dark: #5568d3;
+    --primary-light: #7c8ef0;
+    --accent-color: #f093fb;
+    --bg-color: #f5f7fa;
+    --surface-color: #FFFFFF;
+    --text-primary: #2d3748;
+    --text-secondary: #718096;
+    --border-color: #e2e8f0;
+    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(102, 126, 234, 0.1);
+    --shadow-md: 0 4px 16px rgba(102, 126, 234, 0.15);
+}
+
+/* Base override */
+.stApp {
+    background-color: var(--bg-color);
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* Hide Streamlit headers */
+header[data-testid="stHeader"] {
+    display: none;
+}
+
+/* Metric Cards */
+.metric-card {
+    background: var(--surface-color);
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    margin-bottom: 20px;
+    transition: transform 0.2s;
+}
+
+.metric-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+}
+
+.metric-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.metric-value {
+    color: var(--text-primary);
+    font-size: 2rem;
+    font-weight: 800;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Expense List Item */
+.expense-item {
+    background: var(--surface-color);
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s;
+}
+
+.expense-item:hover {
+    transform: translateX(4px);
+    border-color: var(--primary-color);
+}
+
+.expense-icon {
+    font-size: 1.5rem;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-color);
+    border-radius: 50%;
+    margin-right: 16px;
+}
+
+.expense-details {
+    flex-grow: 1;
+}
+
+.expense-cat {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.expense-meta {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.expense-amount {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* Buttons */
+.stButton>button {
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s;
+}
+
+.stButton>button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    color: white;
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background-color: var(--surface-color);
+    border-right: 1px solid var(--border-color);
+}
+
+h1,
+h2,
+h3 {
+    color: var(--text-primary);
+}
+
+/* Credit Card */
+.credit-card-item {
+    padding: 24px;
+    border-radius: 20px;
+    color: white;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.gradient-primary {
+    background: var(--gradient-primary);
+}
+
+.gradient-accent {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.gradient-success {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.card-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.card-number {
+    opacity: 0.8;
+    letter-spacing: 2px;
+}
+
+.card-balance-label {
+    font-size: 0.8rem;
+    opacity: 0.9;
+}
+
+.card-balance-amount {
+    font-size: 1.8rem;
+    font-weight: bold;
+}
